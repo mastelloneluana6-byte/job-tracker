@@ -7,17 +7,34 @@ const globalForPrisma = globalThis as unknown as {
   pool: Pool | undefined;
 };
 
+/** Neon's `channel_binding=require` can break `pg` on some serverless hosts — strip it. */
+function sanitizeDatabaseUrl(url: string) {
+  try {
+    const u = new URL(url);
+    u.searchParams.delete("channel_binding");
+    return u.toString();
+  } catch {
+    return url
+      .replace(/([?&])channel_binding=[^&]*&?/g, "$1")
+      .replace(/\?&/, "?")
+      .replace(/[?&]$/, "");
+  }
+}
+
 function getPool() {
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) {
     throw new Error("DATABASE_URL is not set");
   }
+  const cleanUrl = sanitizeDatabaseUrl(connectionString);
   if (!globalForPrisma.pool) {
+    const onVercel = process.env.VERCEL === "1";
     globalForPrisma.pool = new Pool({
-      connectionString,
-      max: Number(process.env.PG_POOL_MAX ?? 5),
-      idleTimeoutMillis: 20_000,
-      connectionTimeoutMillis: 10_000,
+      connectionString: cleanUrl,
+      max: Number(process.env.PG_POOL_MAX ?? (onVercel ? 1 : 5)),
+      idleTimeoutMillis: onVercel ? 10_000 : 20_000,
+      connectionTimeoutMillis: 15_000,
+      allowExitOnIdle: true,
     });
   }
   return globalForPrisma.pool;
@@ -28,24 +45,9 @@ function createPrismaClient() {
   return new PrismaClient({ adapter });
 }
 
-function getPrisma(): PrismaClient {
+export function getPrisma(): PrismaClient {
   if (!globalForPrisma.prisma) {
     globalForPrisma.prisma = createPrismaClient();
   }
   return globalForPrisma.prisma;
 }
-
-/**
- * Lazy Prisma client: no DB connection until first query.
- * Helps `next build` on CI when env is only available at runtime — still set DATABASE_URL on Vercel for build + production.
- */
-export const prisma = new Proxy({} as PrismaClient, {
-  get(_target, prop, receiver) {
-    const client = getPrisma();
-    const value = Reflect.get(client, prop, receiver) as unknown;
-    if (typeof value === "function") {
-      return (value as (...a: unknown[]) => unknown).bind(client);
-    }
-    return value;
-  },
-}) as PrismaClient;

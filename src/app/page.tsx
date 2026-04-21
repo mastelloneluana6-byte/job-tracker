@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { ApplicationCard } from "@/components/tracker/application-card";
 import { EditApplicationOverlay } from "@/components/tracker/edit-application-overlay";
 import { NewApplicationForm } from "@/components/tracker/new-application-form";
@@ -9,12 +9,13 @@ type SearchParams = Promise<{ edit?: string }>;
 export default async function Home({ searchParams }: { searchParams: SearchParams }) {
   const { edit } = await searchParams;
 
+  const db = getPrisma();
   const [applications, editing] = await Promise.all([
-    prisma.jobApplication.findMany({
+    db.jobApplication.findMany({
       orderBy: { updatedAt: "desc" },
     }),
     edit
-      ? prisma.jobApplication.findUnique({ where: { id: edit } })
+      ? db.jobApplication.findUnique({ where: { id: edit } })
       : Promise.resolve(null),
   ]);
 

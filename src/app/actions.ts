@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { ApplicationStatus } from "@/generated/prisma/enums";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 const STATUSES: ApplicationStatus[] = [
   "WISHLIST",
@@ -36,7 +36,7 @@ export async function createApplication(formData: FormData) {
     if (!Number.isNaN(d.getTime())) appliedAt = d;
   }
 
-  await prisma.jobApplication.create({
+  await getPrisma().jobApplication.create({
     data: {
       company,
       roleTitle,
@@ -68,7 +68,7 @@ export async function updateApplication(formData: FormData) {
     if (!Number.isNaN(d.getTime())) appliedAt = d;
   }
 
-  await prisma.jobApplication.update({
+  await getPrisma().jobApplication.update({
     where: { id },
     data: {
       company,
@@ -86,7 +86,7 @@ export async function updateApplication(formData: FormData) {
 export async function setApplicationStatus(id: string, status: string) {
   const parsed = parseStatus(status);
   if (!id || !parsed) return;
-  await prisma.jobApplication.update({
+  await getPrisma().jobApplication.update({
     where: { id },
     data: { status: parsed },
   });
@@ -95,6 +95,6 @@ export async function setApplicationStatus(id: string, status: string) {
 
 export async function deleteApplication(id: string) {
   if (!id) return;
-  await prisma.jobApplication.delete({ where: { id } });
+  await getPrisma().jobApplication.delete({ where: { id } });
   revalidatePath("/");
 }
