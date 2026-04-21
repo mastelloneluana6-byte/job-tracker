@@ -20,6 +20,12 @@ export function DbErrorPanel({ message }: Props) {
           Use your Neon <strong>pooled</strong> connection string (host contains{" "}
           <code className="rounded bg-black/30 px-1">pooler</code>).
         </li>
+        <li>
+          If it says a <strong>column does not exist</strong>, the database schema is behind the app. With{" "}
+          <code className="rounded bg-black/30 px-1">DATABASE_URL</code> set to your{" "}
+          <strong>production</strong> URL (same as in Vercel), run{" "}
+          <code className="rounded bg-black/30 px-1">npx prisma db push</code> in this project, then reload the site.
+        </li>
       </ul>
     </div>
   );

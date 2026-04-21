@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { AppShell } from "@/components/layout/app-shell";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,8 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Scope — Job application tracker",
-  description: "Track roles, companies, and outcomes in one place.",
+  title: "Scope — Job search workspace",
+  description:
+    "Import jobs, track your pipeline, and draft outreach — in one place.",
 };
 
 export default function RootLayout({
@@ -27,7 +29,9 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans">{children}</body>
+      <body className="flex min-h-full flex-col font-sans">
+        <AppShell>{children}</AppShell>
+      </body>
     </html>
   );
 }

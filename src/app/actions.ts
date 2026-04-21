@@ -58,6 +58,7 @@ export async function createApplication(formData: FormData) {
     },
   });
   revalidatePath("/");
+  revalidatePath("/tracker");
 }
 
 export async function updateApplication(formData: FormData) {
@@ -97,7 +98,8 @@ export async function updateApplication(formData: FormData) {
     },
   });
   revalidatePath("/");
-  redirect("/");
+  revalidatePath("/tracker");
+  redirect("/tracker");
 }
 
 export async function setApplicationStatus(id: string, status: string) {
@@ -108,12 +110,14 @@ export async function setApplicationStatus(id: string, status: string) {
     data: { status: parsed },
   });
   revalidatePath("/");
+  revalidatePath("/tracker");
 }
 
 export async function deleteApplication(id: string) {
   if (!id) return;
   await getPrisma().jobApplication.delete({ where: { id } });
   revalidatePath("/");
+  revalidatePath("/tracker");
 }
 
 export async function markFollowUpSent(id: string) {
@@ -123,4 +127,5 @@ export async function markFollowUpSent(id: string) {
     data: { followUpSentAt: new Date() },
   });
   revalidatePath("/");
+  revalidatePath("/tracker");
 }

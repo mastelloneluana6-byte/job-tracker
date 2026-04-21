@@ -94,7 +94,7 @@ export function ApplicationCard({ application }: Props) {
           />
           <div className="flex items-center justify-between gap-2 border-t border-white/[0.06] pt-3">
             <Link
-              href={`/?edit=${application.id}`}
+              href={`/tracker?edit=${application.id}`}
               className="rounded-lg px-3 py-1.5 text-xs font-medium text-zinc-400 transition hover:bg-white/[0.06] hover:text-zinc-200"
             >
               Edit

@@ -15,7 +15,7 @@ export function EditApplicationOverlay({ application }: Props) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
       <Link
-        href="/"
+        href="/tracker"
         className="absolute inset-0 bg-black/75 backdrop-blur-md"
         aria-label="Close editor"
       />
@@ -183,7 +183,7 @@ export function EditApplicationOverlay({ application }: Props) {
 
           <div className="flex flex-col-reverse gap-2 border-t border-white/[0.06] pt-5 sm:flex-row sm:justify-end">
             <Link
-              href="/"
+              href="/tracker"
               className="inline-flex h-11 items-center justify-center rounded-xl border border-white/[0.1] px-5 text-sm font-medium text-zinc-300 transition hover:bg-white/[0.05]"
             >
               Cancel
