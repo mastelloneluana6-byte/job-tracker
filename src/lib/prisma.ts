@@ -1,20 +1,13 @@
-import { neonConfig } from "@neondatabase/serverless";
-import { PrismaNeon } from "@prisma/adapter-neon";
+import { PrismaNeonHttp } from "@prisma/adapter-neon";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@/generated/prisma/client";
 import { Pool as PgPool } from "pg";
-import ws from "ws";
-
-// Neon + Prisma: always use the `ws` package. Node's built-in `WebSocket` (Undici)
-// is set on Vercel but is not compatible with Neon's serverless driver — that caused 500s.
-neonConfig.webSocketConstructor = ws;
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
   pgPool: PgPool | undefined;
 };
 
-/** Neon's `channel_binding=require` can break some drivers — strip it. */
 function sanitizeDatabaseUrl(url: string) {
   try {
     const u = new URL(url);
@@ -43,13 +36,12 @@ function createPrismaClient() {
   }
   const connectionString = sanitizeDatabaseUrl(raw);
 
-  // Neon on Vercel: TCP `pg` often fails — use WebSocket serverless driver + PrismaNeon.
-  // Local / other Postgres: keep `pg` + PrismaPg.
+  // Neon on Vercel: avoid TCP `pg` and WebSocket issues — use HTTP driver (fetch).
+  // See https://github.com/prisma/prisma/tree/main/packages/adapter-neon (PrismaNeonHttp)
   if (isNeonHost(connectionString)) {
-    const adapter = new PrismaNeon({
-      connectionString,
-      max: Number(process.env.NEON_POOL_MAX ?? 1),
-      allowExitOnIdle: true,
+    const adapter = new PrismaNeonHttp(connectionString, {
+      arrayMode: true,
+      fullResults: true,
     });
     return new PrismaClient({ adapter });
   }
