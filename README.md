@@ -111,8 +111,11 @@ Open [http://localhost:3000](http://localhost:3000).
 ## Deploy (e.g. Vercel)
 
 1. Import this repo into [Vercel](https://vercel.com/).  
-2. Set **`DATABASE_URL`** in Project → Settings → Environment Variables (same connection string as Neon).  
-3. Deploy, then put the production URL in the **Live demo** section at the top of this README.
+2. Set **`DATABASE_URL`** in **Project → Settings → Environment Variables**. Use the same Neon URL as in your local `.env`.  
+   - Enable it for **Production**, **Preview**, and **Development** (Vercel runs `next build` with these vars; missing `DATABASE_URL` is the most common deploy failure).  
+3. Redeploy (**Deployments → … → Redeploy** or push a new commit).
+
+Put your public **`*.vercel.app`** URL in the **Live demo** section at the top of this README (the long `vercel.com/.../deployments/...` link in the dashboard is not the app URL visitors use).
 
 **Note:** There is **no login** yet — the demo is intentionally simple. Data is as public as the URL you share. Next iteration would be auth (e.g. NextAuth or Clerk) and row-level ownership.
 
