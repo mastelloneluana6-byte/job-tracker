@@ -3,11 +3,11 @@ import { PrismaNeon } from "@prisma/adapter-neon";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@/generated/prisma/client";
 import { Pool as PgPool } from "pg";
-import { WebSocket } from "ws";
+import ws from "ws";
 
-if (typeof globalThis.WebSocket === "undefined") {
-  neonConfig.webSocketConstructor = WebSocket;
-}
+// Neon + Prisma: always use the `ws` package. Node's built-in `WebSocket` (Undici)
+// is set on Vercel but is not compatible with Neon's serverless driver — that caused 500s.
+neonConfig.webSocketConstructor = ws;
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
