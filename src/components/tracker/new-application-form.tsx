@@ -60,6 +60,56 @@ export function NewApplicationForm() {
             className="mt-1.5 w-full rounded-xl border border-white/[0.1] bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-600 outline-none transition focus:border-[#c9a227]/50 focus:ring-2 focus:ring-[#c9a227]/15"
           />
         </div>
+        <details className="rounded-xl border border-white/[0.06] bg-zinc-950/30 px-3.5 py-2">
+          <summary className="cursor-pointer text-[11px] font-medium uppercase tracking-wider text-zinc-500">
+            Optional details
+          </summary>
+          <div className="mt-3 space-y-4 pb-1">
+            <div>
+              <label
+                htmlFor="location"
+                className="text-[11px] font-medium uppercase tracking-wider text-zinc-500"
+              >
+                Location
+              </label>
+              <input
+                id="location"
+                name="location"
+                placeholder="City, remote…"
+                className="mt-1.5 w-full rounded-xl border border-white/[0.1] bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-600 outline-none transition focus:border-[#c9a227]/50 focus:ring-2 focus:ring-[#c9a227]/15"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="recruiterName"
+                className="text-[11px] font-medium uppercase tracking-wider text-zinc-500"
+              >
+                Recruiter name
+              </label>
+              <input
+                id="recruiterName"
+                name="recruiterName"
+                placeholder="For outreach emails"
+                className="mt-1.5 w-full rounded-xl border border-white/[0.1] bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-600 outline-none transition focus:border-[#c9a227]/50 focus:ring-2 focus:ring-[#c9a227]/15"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="description"
+                className="text-[11px] font-medium uppercase tracking-wider text-zinc-500"
+              >
+                Description snippet
+              </label>
+              <textarea
+                id="description"
+                name="description"
+                rows={3}
+                placeholder="Paste from listing if you like"
+                className="mt-1.5 w-full resize-none rounded-xl border border-white/[0.1] bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-600 outline-none transition focus:border-[#c9a227]/50 focus:ring-2 focus:ring-[#c9a227]/15"
+              />
+            </div>
+          </div>
+        </details>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label

@@ -20,13 +20,21 @@ function parseStatus(value: string): ApplicationStatus | null {
     : null;
 }
 
+function optionalString(formData: FormData, key: string): string | null {
+  const v = String(formData.get(key) ?? "").trim();
+  return v || null;
+}
+
 export async function createApplication(formData: FormData) {
   const company = String(formData.get("company") ?? "").trim();
   const roleTitle = String(formData.get("roleTitle") ?? "").trim();
   if (!company || !roleTitle) return;
 
-  const jobUrl = String(formData.get("jobUrl") ?? "").trim() || null;
-  const notes = String(formData.get("notes") ?? "").trim() || null;
+  const jobUrl = optionalString(formData, "jobUrl");
+  const notes = optionalString(formData, "notes");
+  const location = optionalString(formData, "location");
+  const description = optionalString(formData, "description");
+  const recruiterName = optionalString(formData, "recruiterName");
   const status =
     parseStatus(String(formData.get("status") ?? "APPLIED")) ?? "APPLIED";
   const appliedAtRaw = String(formData.get("appliedAt") ?? "").trim();
@@ -42,6 +50,9 @@ export async function createApplication(formData: FormData) {
       roleTitle,
       jobUrl,
       notes,
+      location,
+      description,
+      recruiterName,
       status,
       appliedAt,
     },
@@ -57,8 +68,11 @@ export async function updateApplication(formData: FormData) {
   const roleTitle = String(formData.get("roleTitle") ?? "").trim();
   if (!company || !roleTitle) return;
 
-  const jobUrl = String(formData.get("jobUrl") ?? "").trim() || null;
-  const notes = String(formData.get("notes") ?? "").trim() || null;
+  const jobUrl = optionalString(formData, "jobUrl");
+  const notes = optionalString(formData, "notes");
+  const location = optionalString(formData, "location");
+  const description = optionalString(formData, "description");
+  const recruiterName = optionalString(formData, "recruiterName");
   const status =
     parseStatus(String(formData.get("status") ?? "")) ?? "APPLIED";
   const appliedAtRaw = String(formData.get("appliedAt") ?? "").trim();
@@ -75,6 +89,9 @@ export async function updateApplication(formData: FormData) {
       roleTitle,
       jobUrl,
       notes,
+      location,
+      description,
+      recruiterName,
       status,
       appliedAt,
     },
@@ -96,5 +113,14 @@ export async function setApplicationStatus(id: string, status: string) {
 export async function deleteApplication(id: string) {
   if (!id) return;
   await getPrisma().jobApplication.delete({ where: { id } });
+  revalidatePath("/");
+}
+
+export async function markFollowUpSent(id: string) {
+  if (!id) return;
+  await getPrisma().jobApplication.update({
+    where: { id },
+    data: { followUpSentAt: new Date() },
+  });
   revalidatePath("/");
 }

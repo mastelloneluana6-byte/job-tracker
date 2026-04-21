@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { JobApplicationModel } from "@/generated/prisma/models";
+import { ApplicationEmailLauncher } from "./application-email-launcher";
 import { DeleteButton } from "./delete-button";
 import { StatusSelect } from "./status-select";
 import { STATUS_LABELS } from "./status-labels";
@@ -43,21 +44,41 @@ export function ApplicationCard({ application }: Props) {
             <span className={STATUS_BADGE[st]}>{STATUS_LABELS[st]}</span>
           </div>
           <p className="text-sm font-medium text-zinc-400">{application.company}</p>
+          {application.location && (
+            <p className="text-xs text-zinc-500">{application.location}</p>
+          )}
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pt-1 text-xs text-zinc-500">
             {applied && <span>Applied {applied}</span>}
             {updated && (
               <span className="text-zinc-600">Updated {updated}</span>
             )}
+            {application.followUpSentAt && (
+              <span className="text-emerald-400/90">Outreach logged</span>
+            )}
           </div>
-          {application.jobUrl && (
-            <a
-              href={application.jobUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block pt-1 text-xs font-medium text-[#d4af37] underline-offset-4 hover:underline"
-            >
-              View listing →
-            </a>
+          <div className="flex flex-wrap items-center gap-3 pt-2">
+            {application.jobUrl && (
+              <a
+                href={application.jobUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs font-medium text-[#d4af37] underline-offset-4 hover:underline"
+              >
+                View listing →
+              </a>
+            )}
+            <ApplicationEmailLauncher
+              applicationId={application.id}
+              company={application.company}
+              roleTitle={application.roleTitle}
+              recruiterName={application.recruiterName}
+              variant="inline"
+            />
+          </div>
+          {application.description && (
+            <p className="pt-2 line-clamp-2 text-xs leading-relaxed text-zinc-500">
+              {application.description}
+            </p>
           )}
           {application.notes && (
             <p className="pt-2 line-clamp-3 text-sm leading-relaxed text-zinc-400">
@@ -66,7 +87,7 @@ export function ApplicationCard({ application }: Props) {
           )}
         </div>
 
-        <div className="flex w-full shrink-0 flex-col gap-3 sm:w-44">
+        <div className="flex w-full shrink-0 flex-col gap-3 sm:w-48">
           <StatusSelect
             applicationId={application.id}
             value={application.status}

@@ -22,13 +22,21 @@ enum ApplicationStatus {
 }
 
 model JobApplication {
-  id          String             @id @default(cuid())
-  company     String
-  roleTitle   String
-  status      ApplicationStatus  @default(APPLIED)
-  jobUrl      String?
-  notes       String?            @db.Text
-  appliedAt   DateTime?
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
+  id               String             @id @default(cuid())
+  company          String
+  roleTitle        String
+  status           ApplicationStatus  @default(APPLIED)
+  jobUrl           String?
+  notes            String?            @db.Text
+  /// City / region from listing or import
+  location         String?
+  /// Scraped or pasted job description (optional)
+  description      String?            @db.Text
+  /// For outreach / thank-you emails
+  recruiterName    String?
+  /// When user marked last generated outreach as sent
+  followUpSentAt   DateTime?
+  appliedAt        DateTime?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
 }

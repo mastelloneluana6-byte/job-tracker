@@ -85,6 +85,49 @@ export function EditApplicationOverlay({ application }: Props) {
               className="mt-1.5 w-full rounded-xl border border-white/[0.1] bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-100 outline-none transition focus:border-[#c9a227]/50 focus:ring-2 focus:ring-[#c9a227]/15"
             />
           </div>
+          <div>
+            <label
+              htmlFor="edit-location"
+              className="text-[11px] font-medium uppercase tracking-wider text-zinc-500"
+            >
+              Location
+            </label>
+            <input
+              id="edit-location"
+              name="location"
+              defaultValue={application.location ?? ""}
+              className="mt-1.5 w-full rounded-xl border border-white/[0.1] bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-100 outline-none transition focus:border-[#c9a227]/50 focus:ring-2 focus:ring-[#c9a227]/15"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="edit-recruiterName"
+              className="text-[11px] font-medium uppercase tracking-wider text-zinc-500"
+            >
+              Recruiter name
+            </label>
+            <input
+              id="edit-recruiterName"
+              name="recruiterName"
+              defaultValue={application.recruiterName ?? ""}
+              className="mt-1.5 w-full rounded-xl border border-white/[0.1] bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-100 outline-none transition focus:border-[#c9a227]/50 focus:ring-2 focus:ring-[#c9a227]/15"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="edit-description"
+              className="text-[11px] font-medium uppercase tracking-wider text-zinc-500"
+            >
+              Description snippet
+            </label>
+            <textarea
+              id="edit-description"
+              name="description"
+              rows={3}
+              defaultValue={application.description ?? ""}
+              className="mt-1.5 w-full resize-none rounded-xl border border-white/[0.1] bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-100 outline-none transition focus:border-[#c9a227]/50 focus:ring-2 focus:ring-[#c9a227]/15"
+            />
+          </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label
