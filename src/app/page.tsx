@@ -1,23 +1,34 @@
 import { getPrisma } from "@/lib/prisma";
 import { ApplicationCard } from "@/components/tracker/application-card";
+import { DbErrorPanel } from "@/components/tracker/db-error-panel";
 import { EditApplicationOverlay } from "@/components/tracker/edit-application-overlay";
 import { NewApplicationForm } from "@/components/tracker/new-application-form";
 import { StatsBar } from "@/components/tracker/stats-bar";
+import type { JobApplicationModel } from "@/generated/prisma/models";
 
 type SearchParams = Promise<{ edit?: string }>;
 
 export default async function Home({ searchParams }: { searchParams: SearchParams }) {
   const { edit } = await searchParams;
 
-  const db = getPrisma();
-  const [applications, editing] = await Promise.all([
-    db.jobApplication.findMany({
-      orderBy: { updatedAt: "desc" },
-    }),
-    edit
-      ? db.jobApplication.findUnique({ where: { id: edit } })
-      : Promise.resolve(null),
-  ]);
+  let applications: JobApplicationModel[] = [];
+  let editing: JobApplicationModel | null = null;
+  let loadError: string | null = null;
+
+  try {
+    const db = getPrisma();
+    [applications, editing] = await Promise.all([
+      db.jobApplication.findMany({
+        orderBy: { updatedAt: "desc" },
+      }),
+      edit
+        ? db.jobApplication.findUnique({ where: { id: edit } })
+        : Promise.resolve(null),
+    ]);
+  } catch (err) {
+    loadError =
+      err instanceof Error ? err.message : "Unknown error while loading data.";
+  }
 
   const statusList = applications.map((a) => a.status);
 
@@ -44,6 +55,11 @@ export default async function Home({ searchParams }: { searchParams: SearchParam
         </div>
       </header>
 
+      {loadError ? (
+        <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-5 py-12 sm:px-8">
+          <DbErrorPanel message={loadError} />
+        </main>
+      ) : (
       <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-10 px-5 py-10 sm:px-8 lg:flex-row lg:gap-12">
         <aside className="flex w-full shrink-0 flex-col gap-6 lg:sticky lg:top-8 lg:max-w-sm lg:self-start">
           <StatsBar statuses={statusList} />
@@ -83,6 +99,7 @@ export default async function Home({ searchParams }: { searchParams: SearchParam
           )}
         </section>
       </main>
+      )}
 
       <footer className="mt-auto border-t border-white/[0.06] bg-zinc-950/40 py-8 backdrop-blur-sm">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-center gap-4 px-5 sm:flex-row sm:justify-between sm:px-8">
