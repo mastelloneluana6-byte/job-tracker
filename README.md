@@ -73,7 +73,7 @@ If you open the deployed app, you’re seeing the same patterns I’d bring to a
 | API surface | Server Actions (no hand-rolled REST for core CRUD) |
 | Language | TypeScript |
 | Styling | Tailwind CSS v4 |
-| Data | Prisma 7 · PostgreSQL · `pg` |
+| Data | Prisma 7 · PostgreSQL — Neon (`*.neon.tech`) uses `@neondatabase/serverless` + `@prisma/adapter-neon` for Vercel; other URLs use `pg` |
 | Hosting (typical) | Vercel (app) · Neon (database) |
 
 ---
