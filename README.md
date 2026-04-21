@@ -1,6 +1,8 @@
 <div align="center">
 
-# Scope — Job application tracker
+[![Scope — Job application tracker](./docs/banner.svg)](https://job-tracker-mny8drgry-mastelloneluana6-bytes-projects.vercel.app)
+
+<br/>
 
 ### A full-stack tool I built to stay organized while job searching — and to show how I ship real software end-to-end.
 
@@ -10,12 +12,9 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 
-**[Source code](https://github.com/mastelloneluana6-byte/job-tracker)** · **[Report an issue](https://github.com/mastelloneluana6-byte/job-tracker/issues)**
+### [**Open the live app →**](https://job-tracker-mny8drgry-mastelloneluana6-bytes-projects.vercel.app)
 
-### Live demo
-
-**→ Replace this line with your Vercel URL after deploy, then push again.**  
-Example: `**[Open the live app](https://your-app.vercel.app)**`
+**[Source code](https://github.com/mastelloneluana6-byte/job-tracker)** · **[Report an issue](https://github.com/mastelloneluana6-byte/job-tracker/issues)** · **[Live demo](https://job-tracker-mny8drgry-mastelloneluana6-bytes-projects.vercel.app)**
 
 </div>
 
@@ -27,7 +26,8 @@ Example: `**[Open the live app](https://your-app.vercel.app)**`
 | :--- | :--- |
 | **What** | A web app to log applications, track status through the hiring funnel, store listing URLs and notes, and see pipeline stats at a glance. |
 | **Why** | Job searching generates a lot of moving parts. I wanted one place for truth — and a **portfolio piece** that reflects how I work: clear UX, typed data layer, and a stack I’d use on a real team. |
-| **Proof of skill** | Next.js App Router, **Server Actions** for mutations, **Prisma + PostgreSQL** for persistence, **Tailwind** for a polished responsive UI, **hosted DB** (Neon) + **Vercel**-ready deployment. |
+| **Proof of skill** | Next.js App Router, **Server Actions** for mutations, **Prisma + PostgreSQL** for persistence, **Tailwind** for a polished responsive UI, **hosted DB** (Neon) + **Vercel** deployment. |
+| **Try it** | **[job-tracker on Vercel](https://job-tracker-mny8drgry-mastelloneluana6-bytes-projects.vercel.app)** — same UX as production. |
 
 ---
 
@@ -50,7 +50,7 @@ This is the kind of problem I like: **messy real-world workflow** → **simple d
 - **Update quickly** — change status from the card; **edit** opens a focused overlay for full details; **remove** with confirmation.  
 - **Stay oriented** — sidebar shows counts per stage plus how many are still “active” in the search.
 
-If you open the deployed app, you’re seeing the same patterns I’d bring to a product team: **structured data**, **predictable UI states**, and **server-first** mutations so the UI stays in sync with the database.
+**[Open the live app](https://job-tracker-mny8drgry-mastelloneluana6-bytes-projects.vercel.app)** to click through the real UI — same patterns I’d bring to a product team: **structured data**, **predictable UI states**, and **server-first** mutations so the UI stays in sync with the database.
 
 ---
 
@@ -59,7 +59,7 @@ If you open the deployed app, you’re seeing the same patterns I’d bring to a
 - **Next.js 16 (App Router)** — server-rendered dashboard; dynamic routes and search params for the edit experience.  
 - **Server Actions** — create / update / delete / set status without a separate REST layer; `revalidatePath` keeps lists fresh.  
 - **Prisma 7 + PostgreSQL** — schema-first `JobApplication` model with enums; **Neon** in production; Prisma Client generated to `src/generated/prisma`.  
-- **Driver adapter (`pg` + `@prisma/adapter-pg`)** — matches Prisma 7’s PostgreSQL client expectations in serverless/long-lived Node contexts.  
+- **Neon on Vercel** — `PrismaNeonHttp` + `@neondatabase/serverless` (HTTP/fetch, serverless-friendly); **local / other Postgres** uses `pg` + `@prisma/adapter-pg`.  
 - **Tailwind CSS v4** — dark, high-contrast UI with consistent spacing, accessible forms, and status-driven accent colors.  
 - **TypeScript throughout** — shared types from Prisma; fewer “stringly typed” bugs across UI and data access.
 
@@ -73,8 +73,8 @@ If you open the deployed app, you’re seeing the same patterns I’d bring to a
 | API surface | Server Actions (no hand-rolled REST for core CRUD) |
 | Language | TypeScript |
 | Styling | Tailwind CSS v4 |
-| Data | Prisma 7 · PostgreSQL — Neon (`*.neon.tech`) uses `PrismaNeonHttp` (fetch, serverless-friendly); other URLs use `pg` |
-| Hosting (typical) | Vercel (app) · Neon (database) |
+| Data | Prisma 7 · PostgreSQL — Neon (`*.neon.tech`) uses `PrismaNeonHttp` (fetch); other URLs use `pg` |
+| Hosting (typical) | [Vercel](https://vercel.com/) (app) · [Neon](https://neon.tech/) (database) |
 
 ---
 
@@ -85,6 +85,7 @@ src/app/              # Pages, layout, server actions
 src/components/       # Tracker UI (forms, cards, stats, status controls)
 src/lib/              # Prisma singleton for server usage
 prisma/               # Schema & migrations
+docs/                 # README assets (banner, screenshots)
 ```
 
 ---
@@ -102,7 +103,9 @@ npm run db:push        # or npm run db:migrate
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Then open **[http://localhost:3000](http://localhost:3000)** on your machine.
+
+**Public build (no local setup):** **[https://job-tracker-mny8drgry-mastelloneluana6-bytes-projects.vercel.app](https://job-tracker-mny8drgry-mastelloneluana6-bytes-projects.vercel.app)**
 
 **Useful scripts:** `npm run build` · `npm run db:studio` · `npm run db:generate`
 
@@ -112,10 +115,12 @@ Open [http://localhost:3000](http://localhost:3000).
 
 1. Import this repo into [Vercel](https://vercel.com/).  
 2. Set **`DATABASE_URL`** in **Project → Settings → Environment Variables**. Use the same Neon URL as in your local `.env`.  
-   - Enable it for **Production**, **Preview**, and **Development** (Vercel runs `next build` with these vars; missing `DATABASE_URL` is the most common deploy failure).  
+   - **Key** must be exactly `DATABASE_URL` (letters + underscore only).  
+   - **Value** is the full `postgresql://…` string.  
+   - Enable for **Production**, **Preview**, and **Development** as needed.  
 3. Redeploy (**Deployments → … → Redeploy** or push a new commit).
 
-Put your public **`*.vercel.app`** URL in the **Live demo** section at the top of this README (the long `vercel.com/.../deployments/...` link in the dashboard is not the app URL visitors use).
+**Live app:** **[https://job-tracker-mny8drgry-mastelloneluana6-bytes-projects.vercel.app](https://job-tracker-mny8drgry-mastelloneluana6-bytes-projects.vercel.app)**
 
 **Note:** There is **no login** yet — the demo is intentionally simple. Data is as public as the URL you share. Next iteration would be auth (e.g. NextAuth or Clerk) and row-level ownership.
 
@@ -132,7 +137,7 @@ Put your public **`*.vercel.app`** URL in the **Live demo** section at the top o
 
 ## Screenshot
 
-Add `docs/screenshot.png` and uncomment in your fork if you want a visual above the fold on GitHub:
+Add `docs/screenshot.png` and uncomment below if you want an app screenshot next to the banner:
 
 ```markdown
 ![Scope — job application tracker](./docs/screenshot.png)
