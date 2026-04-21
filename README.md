@@ -1,6 +1,8 @@
 <div align="center">
 
-[![Scope — Job application tracker](./docs/banner.svg)](https://job-tracker-mny8drgry-mastelloneluana6-bytes-projects.vercel.app)
+<a href="https://job-tracker-mny8drgry-mastelloneluana6-bytes-projects.vercel.app">
+  <img src="docs/banner.png" alt="Scope — Job application tracker" width="920" />
+</a>
 
 <br/>
 
