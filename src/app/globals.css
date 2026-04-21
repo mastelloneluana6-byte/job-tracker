@@ -1,8 +1,15 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --surface: rgba(255, 255, 255, 0.035);
+  --surface-elevated: rgba(255, 255, 255, 0.055);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --accent: #c9a227;
+  --accent-soft: rgba(201, 162, 39, 0.15);
+  --accent-glow: rgba(201, 162, 39, 0.35);
+  --background: #060607;
+  --foreground: #f4f4f5;
+  --muted: #a1a1aa;
 }
 
 @theme inline {
@@ -12,15 +19,48 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
+  background-image:
+    radial-gradient(ellipse 120% 80% at 50% -40%, rgba(201, 162, 39, 0.12), transparent),
+    radial-gradient(ellipse 60% 50% at 100% 0%, rgba(120, 80, 200, 0.06), transparent);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+::selection {
+  background: rgba(201, 162, 39, 0.35);
+  color: #fff;
+}
+
+/* Native dialog — premium frame */
+dialog.app-dialog {
+  margin: auto;
+  max-width: min(32rem, calc(100vw - 2rem));
+  width: 100%;
+  border: 1px solid var(--border-subtle);
+  border-radius: 1.25rem;
+  background: linear-gradient(165deg, #121214 0%, #0a0a0c 100%);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+    0 24px 80px rgba(0, 0, 0, 0.65);
+  padding: 0;
+  color: var(--foreground);
+}
+
+dialog.app-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(6px);
+}
+
+details summary {
+  list-style: none;
+}
+
+details summary::-webkit-details-marker {
+  display: none;
 }
