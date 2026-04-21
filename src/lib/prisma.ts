@@ -13,7 +13,12 @@ function getPool() {
     throw new Error("DATABASE_URL is not set");
   }
   if (!globalForPrisma.pool) {
-    globalForPrisma.pool = new Pool({ connectionString });
+    globalForPrisma.pool = new Pool({
+      connectionString,
+      max: Number(process.env.PG_POOL_MAX ?? 5),
+      idleTimeoutMillis: 20_000,
+      connectionTimeoutMillis: 10_000,
+    });
   }
   return globalForPrisma.pool;
 }
@@ -23,8 +28,24 @@ function createPrismaClient() {
   return new PrismaClient({ adapter });
 }
 
-export const prisma = globalForPrisma.prisma ?? createPrismaClient();
-
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
+function getPrisma(): PrismaClient {
+  if (!globalForPrisma.prisma) {
+    globalForPrisma.prisma = createPrismaClient();
+  }
+  return globalForPrisma.prisma;
 }
+
+/**
+ * Lazy Prisma client: no DB connection until first query.
+ * Helps `next build` on CI when env is only available at runtime — still set DATABASE_URL on Vercel for build + production.
+ */
+export const prisma = new Proxy({} as PrismaClient, {
+  get(_target, prop, receiver) {
+    const client = getPrisma();
+    const value = Reflect.get(client, prop, receiver) as unknown;
+    if (typeof value === "function") {
+      return (value as (...a: unknown[]) => unknown).bind(client);
+    }
+    return value;
+  },
+}) as PrismaClient;
