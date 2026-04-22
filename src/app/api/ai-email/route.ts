@@ -9,6 +9,12 @@ const tones = ["formal", "friendly"] as const;
 type EmailType = (typeof emailTypes)[number];
 type Tone = (typeof tones)[number];
 
+type ErrorMeta = {
+  error: string;
+  status: number;
+  code?: string;
+};
+
 function buildPrompt(input: {
   company: string;
   roleTitle: string;
@@ -48,6 +54,58 @@ Rules:
 - Sound human: vary sentence length, avoid buzzword soup, no "I hope this email finds you well".
 - Do not invent facts (interview dates, offers, internal names).
 - Sign off with a simple closing and the placeholder "Your name" on its own line.`;
+}
+
+function toErrorMeta(error: unknown): ErrorMeta {
+  if (error instanceof OpenAI.APIError) {
+    const code = error.code ? String(error.code) : undefined;
+    if (code === "insufficient_quota") {
+      return {
+        error:
+          "OpenAI quota is exceeded. Add billing/credits in your OpenAI account, then retry.",
+        status: 429,
+        code,
+      };
+    }
+    if (error.status === 401) {
+      return {
+        error:
+          "OpenAI rejected the API key (401). Check OPENAI_API_KEY in Vercel and local .env.",
+        status: 401,
+        code,
+      };
+    }
+    if (error.status === 404 || code === "model_not_found") {
+      return {
+        error:
+          "Selected model was not found. Set OPENAI_MODEL to an available model (for example: gpt-4o-mini).",
+        status: 400,
+        code,
+      };
+    }
+    return {
+      error: error.message || "OpenAI request failed.",
+      status: error.status ?? 502,
+      code,
+    };
+  }
+
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "message" in error &&
+    typeof (error as { message?: unknown }).message === "string"
+  ) {
+    return {
+      error: (error as { message: string }).message,
+      status: 500,
+    };
+  }
+
+  return {
+    error: "Something went wrong calling OpenAI.",
+    status: 500,
+  };
 }
 
 export async function POST(req: Request) {
@@ -123,8 +181,10 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ email: text });
   } catch (e) {
-    const message =
-      e instanceof Error ? e.message : "Something went wrong calling OpenAI.";
-    return NextResponse.json({ error: message }, { status: 500 });
+    const meta = toErrorMeta(e);
+    return NextResponse.json(
+      { error: meta.error, code: meta.code ?? null },
+      { status: meta.status },
+    );
   }
 }

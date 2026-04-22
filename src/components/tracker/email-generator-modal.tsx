@@ -32,15 +32,18 @@ export function EmailGeneratorModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [lastGeneratedAt, setLastGeneratedAt] = useState<Date | null>(null);
 
   const generate = async () => {
     setError(null);
     setLoading(true);
-    setBody("");
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 45_000);
     try {
       const res = await fetch("/api/ai-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
         body: JSON.stringify({
           company,
           roleTitle,
@@ -49,15 +52,31 @@ export function EmailGeneratorModal({
           tone,
         }),
       });
-      const data = (await res.json()) as { email?: string; error?: string };
+      const data = (await res.json()) as {
+        email?: string;
+        error?: string;
+        code?: string | null;
+      };
       if (!res.ok) {
-        setError(data.error ?? "Could not generate email.");
+        const details = data.code ? ` (${data.code})` : "";
+        setError((data.error ?? "Could not generate email.") + details);
         return;
       }
-      setBody(data.email ?? "");
-    } catch {
-      setError("Network error.");
+      const next = (data.email ?? "").trim();
+      if (!next) {
+        setError("Email came back empty. Try again.");
+        return;
+      }
+      setBody(next);
+      setLastGeneratedAt(new Date());
+    } catch (err) {
+      if (err instanceof DOMException && err.name === "AbortError") {
+        setError("Generation timed out. Please try again.");
+      } else {
+        setError("Network error. Check connection and retry.");
+      }
     } finally {
+      clearTimeout(timeout);
       setLoading(false);
     }
   };
@@ -179,8 +198,22 @@ export function EmailGeneratorModal({
           </div>
 
           {error && (
-            <p className="rounded-lg border border-red-500/30 bg-red-950/40 px-3 py-2 text-xs text-red-200">
-              {error}
+            <div className="rounded-lg border border-red-500/30 bg-red-950/40 px-3 py-2 text-xs text-red-200">
+              <p>{error}</p>
+              <button
+                type="button"
+                onClick={() => void generate()}
+                disabled={loading}
+                className="mt-2 inline-flex rounded-md border border-red-300/40 px-2 py-1 text-[11px] font-semibold text-red-100 transition hover:bg-red-900/30 disabled:opacity-50"
+              >
+                Retry
+              </button>
+            </div>
+          )}
+
+          {lastGeneratedAt && !error && (
+            <p className="text-[11px] text-zinc-500">
+              Last generated at {lastGeneratedAt.toLocaleTimeString()}.
             </p>
           )}
         </div>
