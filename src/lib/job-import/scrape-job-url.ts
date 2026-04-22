@@ -146,12 +146,75 @@ export function extractJobPreview(html: string, jobUrl: string): JobPreview {
   };
 }
 
-export async function fetchJobPageHtml(url: string): Promise<string> {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 12_000);
+function ensureSizeIsSafe(res: Response, text: string) {
+  const len = Number(res.headers.get("content-length") ?? 0);
+  if (len > 2_000_000 || text.length > 2_000_000) {
+    throw new Error("Page is too large to import.");
+  }
+}
 
-  const res = await fetch(url, {
-    signal: controller.signal,
+async function fetchWithTimeout(
+  input: string,
+  init: RequestInit,
+  timeoutMs = 12_000,
+): Promise<Response> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(input, {
+      ...init,
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+/**
+ * Some job boards (Indeed, etc.) block direct server-side fetches with 403.
+ * This fallback uses a public reader mirror to still capture basic preview text.
+ */
+async function fetchWithReaderFallback(originalUrl: string): Promise<string> {
+  const readerUrl = `https://r.jina.ai/http://${originalUrl.replace(
+    /^https?:\/\//,
+    "",
+  )}`;
+  const res = await fetchWithTimeout(
+    readerUrl,
+    {
+      redirect: "follow",
+      headers: {
+        "User-Agent":
+          "ScopeJobTracker/1.0 (+https://github.com/mastelloneluana6-byte/job-tracker)",
+        Accept: "text/plain,text/markdown,text/html",
+      },
+    },
+    15_000,
+  );
+
+  if (!res.ok) {
+    throw new Error(`Could not load page (HTTP ${res.status}).`);
+  }
+
+  const text = await res.text();
+  ensureSizeIsSafe(res, text);
+
+  // Reader output is plain text/markdown, so wrap it into minimal HTML
+  // and let existing extraction logic consume title/description fields.
+  const lines = text
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean);
+  const firstLine = lines[0] ?? "Job listing";
+  const title = firstLine.replace(/^#+\s*/, "").slice(0, 180);
+  const desc = text.replace(/\s+/g, " ").trim().slice(0, 8000);
+  const safeTitle = title.replace(/"/g, "&quot;");
+  const safeDesc = desc.replace(/"/g, "&quot;");
+  return `<html><head><title>${safeTitle}</title><meta name="description" content="${safeDesc}" /></head><body><pre>${safeDesc}</pre></body></html>`;
+}
+
+export async function fetchJobPageHtml(url: string): Promise<string> {
+  const res = await fetchWithTimeout(url, {
     redirect: "follow",
     headers: {
       "User-Agent":
@@ -159,20 +222,16 @@ export async function fetchJobPageHtml(url: string): Promise<string> {
       Accept: "text/html,application/xhtml+xml",
     },
   });
-  clearTimeout(timeout);
 
   if (!res.ok) {
+    // Common anti-bot responses from job boards.
+    if ([401, 403, 406, 429, 451].includes(res.status)) {
+      return fetchWithReaderFallback(url);
+    }
     throw new Error(`Could not load page (HTTP ${res.status}).`);
   }
 
-  const len = Number(res.headers.get("content-length") ?? 0);
-  if (len > 2_000_000) {
-    throw new Error("Page is too large to import.");
-  }
-
   const text = await res.text();
-  if (text.length > 2_000_000) {
-    throw new Error("Page is too large to import.");
-  }
+  ensureSizeIsSafe(res, text);
   return text;
 }
