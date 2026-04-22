@@ -105,7 +105,7 @@ npm run db:push        # or npm run db:migrate
 npm run dev
 ```
 
-Then open **[http://localhost:3000](http://localhost:3000)** on your machine.
+Then open the local URL shown in your terminal after `npm run dev`.
 
 **Public build (no local setup):** **[https://job-tracker-5p7tj7ssp-mastelloneluana6-bytes-projects.vercel.app](https://job-tracker-5p7tj7ssp-mastelloneluana6-bytes-projects.vercel.app)**
 
