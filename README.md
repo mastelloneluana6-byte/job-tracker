@@ -1,6 +1,6 @@
 <div align="center">
 
-<a href="https://job-tracker-lr4y4xeum-mastelloneluana6-bytes-projects.vercel.app">
+<a href="https://job-tracker-mastelloneluana6-bytes-projects.vercel.app">
   <img src="docs/banner.png" alt="Scope — Job application tracker" width="920" />
 </a>
 
@@ -14,11 +14,19 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 
-### [**Open the live app →**](https://job-tracker-lr4y4xeum-mastelloneluana6-bytes-projects.vercel.app)
+### [**Open the live app →**](https://job-tracker-mastelloneluana6-bytes-projects.vercel.app)
 
-**[Source code](https://github.com/mastelloneluana6-byte/job-tracker)** · **[Report an issue](https://github.com/mastelloneluana6-byte/job-tracker/issues)** · **[Live demo](https://job-tracker-lr4y4xeum-mastelloneluana6-bytes-projects.vercel.app)**
+**[Source code](https://github.com/mastelloneluana6-byte/job-tracker)** · **[Report an issue](https://github.com/mastelloneluana6-byte/job-tracker/issues)** · **[Live demo](https://job-tracker-mastelloneluana6-bytes-projects.vercel.app)**
 
 </div>
+
+---
+
+## Demo video
+
+> GitHub README does not support true autoplay, so this opens on click.
+
+[![Watch the Scope demo on Loom](https://cdn.loom.com/sessions/thumbnails/13488796a545422eb42a42b9694a73df-with-play.gif)](https://www.loom.com/share/13488796a545422eb42a42b9694a73df)
 
 ---
 
@@ -29,7 +37,7 @@
 | **What** | A web app to log applications, track status through the hiring funnel, store listing URLs and notes, and see pipeline stats at a glance. |
 | **Why** | Job searching generates a lot of moving parts. I wanted one place for truth — and a **portfolio piece** that reflects how I work: clear UX, typed data layer, and a stack I’d use on a real team. |
 | **Proof of skill** | Next.js App Router, **Server Actions** for mutations, **Prisma + PostgreSQL** for persistence, **Tailwind** for a polished responsive UI, **hosted DB** (Neon) + **Vercel** deployment. |
-| **Try it** | **[job-tracker on Vercel](https://job-tracker-lr4y4xeum-mastelloneluana6-bytes-projects.vercel.app)** — same UX as production. |
+| **Try it** | **[job-tracker on Vercel](https://job-tracker-mastelloneluana6-bytes-projects.vercel.app)** — same UX as production. |
 
 ---
 
@@ -52,7 +60,7 @@ This is the kind of problem I like: **messy real-world workflow** → **simple d
 - **Update quickly** — change status from the card; **edit** opens a focused overlay for full details; **remove** with confirmation.  
 - **Stay oriented** — sidebar shows counts per stage plus how many are still “active” in the search.
 
-**[Open the live app](https://job-tracker-lr4y4xeum-mastelloneluana6-bytes-projects.vercel.app)** to click through the real UI — same patterns I’d bring to a product team: **structured data**, **predictable UI states**, and **server-first** mutations so the UI stays in sync with the database.
+**[Open the live app](https://job-tracker-mastelloneluana6-bytes-projects.vercel.app)** to click through the real UI — same patterns I’d bring to a product team: **structured data**, **predictable UI states**, and **server-first** mutations so the UI stays in sync with the database.
 
 ---
 
@@ -107,7 +115,7 @@ npm run dev
 
 Then open the local URL shown in your terminal after `npm run dev`.
 
-**Public build (no local setup):** **[https://job-tracker-lr4y4xeum-mastelloneluana6-bytes-projects.vercel.app](https://job-tracker-lr4y4xeum-mastelloneluana6-bytes-projects.vercel.app)**
+**Public build (no local setup):** **[https://job-tracker-mastelloneluana6-bytes-projects.vercel.app](https://job-tracker-mastelloneluana6-bytes-projects.vercel.app)**
 
 **Useful scripts:** `npm run build` · `npm run db:studio` · `npm run db:generate`
 
@@ -122,7 +130,7 @@ Then open the local URL shown in your terminal after `npm run dev`.
    - Enable for **Production**, **Preview**, and **Development** as needed.  
 3. Redeploy (**Deployments → … → Redeploy** or push a new commit).
 
-**Live app:** **[https://job-tracker-lr4y4xeum-mastelloneluana6-bytes-projects.vercel.app](https://job-tracker-lr4y4xeum-mastelloneluana6-bytes-projects.vercel.app)**
+**Live app:** **[https://job-tracker-mastelloneluana6-bytes-projects.vercel.app](https://job-tracker-mastelloneluana6-bytes-projects.vercel.app)**
 
 **Note:** There is **no login** yet — the demo is intentionally simple. Data is as public as the URL you share. Next iteration would be auth (e.g. NextAuth or Clerk) and row-level ownership.
 
