@@ -15,6 +15,60 @@ type ErrorMeta = {
   code?: string;
 };
 
+function buildFallbackEmail(input: {
+  company: string;
+  roleTitle: string;
+  recruiterName: string | null;
+  emailType: EmailType;
+  tone: Tone;
+}): string {
+  const greeting = input.recruiterName
+    ? `Hi ${input.recruiterName},`
+    : "Hello,";
+
+  const closing =
+    input.tone === "formal"
+      ? "Thank you for your time and consideration."
+      : "Thanks so much for your time and consideration.";
+
+  if (input.emailType === "thank-you") {
+    return `${greeting}
+
+Thank you for your time regarding the ${input.roleTitle} role at ${input.company}. I appreciated the chance to learn more about the team and the direction of the role.
+
+Our conversation made me even more interested in contributing. The opportunity to support your goals at ${input.company} feels like a strong fit for my background and working style.
+
+${closing}
+
+Best regards,
+Your name`;
+  }
+
+  if (input.emailType === "cold-outreach") {
+    return `${greeting}
+
+I’m reaching out because I’m very interested in the ${input.roleTitle} role at ${input.company}. I’ve been following the company’s work and would value the chance to contribute.
+
+I’d be glad to share a short overview of my relevant experience and how I could support the team’s priorities. If useful, I can also send my resume and availability for a brief conversation.
+
+${closing}
+
+Best regards,
+Your name`;
+  }
+
+  return `${greeting}
+
+I wanted to follow up on my application for the ${input.roleTitle} role at ${input.company}. I remain very interested in the opportunity and in supporting the team’s goals.
+
+If there are any updates on next steps, I’d appreciate the chance to continue the conversation. I’m happy to provide any additional information if helpful.
+
+${closing}
+
+Best regards,
+Your name`;
+}
+
 function buildPrompt(input: {
   company: string;
   roleTitle: string;
@@ -110,15 +164,13 @@ function toErrorMeta(error: unknown): ErrorMeta {
 
 export async function POST(req: Request) {
   const key = process.env.OPENAI_API_KEY;
-  if (!key) {
-    return NextResponse.json(
-      {
-        error:
-          "OPENAI_API_KEY is not configured. Add it in .env locally and in Vercel project settings.",
-      },
-      { status: 503 },
-    );
-  }
+  let fallbackInput: {
+    company: string;
+    roleTitle: string;
+    recruiterName: string | null;
+    emailType: EmailType;
+    tone: Tone;
+  } | null = null;
 
   try {
     const body = (await req.json()) as {
@@ -152,19 +204,30 @@ export async function POST(req: Request) {
         ? body.recruiterName.trim()
         : null;
 
+    const input = {
+      company,
+      roleTitle,
+      recruiterName,
+      emailType,
+      tone,
+    };
+    fallbackInput = input;
+
+    if (!key) {
+      return NextResponse.json({
+        email: buildFallbackEmail(input),
+        warning:
+          "OPENAI_API_KEY is not configured. Returned a built-in draft template instead.",
+      });
+    }
+
     const client = new OpenAI({ apiKey: key });
     const completion = await client.chat.completions.create({
       model: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
       messages: [
         {
           role: "user",
-          content: buildPrompt({
-            company,
-            roleTitle,
-            recruiterName,
-            emailType,
-            tone,
-          }),
+          content: buildPrompt(input),
         },
       ],
       temperature: 0.75,
@@ -182,9 +245,15 @@ export async function POST(req: Request) {
     return NextResponse.json({ email: text });
   } catch (e) {
     const meta = toErrorMeta(e);
-    return NextResponse.json(
-      { error: meta.error, code: meta.code ?? null },
-      { status: meta.status },
-    );
+    if (fallbackInput) {
+      return NextResponse.json({
+        email: buildFallbackEmail(fallbackInput),
+        warning: `OpenAI failed (${meta.code ?? meta.status}). Returned a built-in draft template.`,
+        error: meta.error,
+        code: meta.code ?? null,
+      });
+    }
+
+    return NextResponse.json({ error: meta.error, code: meta.code ?? null }, { status: meta.status });
   }
 }

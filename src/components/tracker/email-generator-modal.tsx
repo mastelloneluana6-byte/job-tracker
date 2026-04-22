@@ -31,11 +31,13 @@ export function EmailGeneratorModal({
   const [body, setBody] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [warning, setWarning] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [lastGeneratedAt, setLastGeneratedAt] = useState<Date | null>(null);
 
   const generate = async () => {
     setError(null);
+    setWarning(null);
     setLoading(true);
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 45_000);
@@ -56,6 +58,7 @@ export function EmailGeneratorModal({
         email?: string;
         error?: string;
         code?: string | null;
+        warning?: string;
       };
       if (!res.ok) {
         const details = data.code ? ` (${data.code})` : "";
@@ -69,6 +72,9 @@ export function EmailGeneratorModal({
       }
       setBody(next);
       setLastGeneratedAt(new Date());
+      if (data.warning) {
+        setWarning(data.warning);
+      }
     } catch (err) {
       if (err instanceof DOMException && err.name === "AbortError") {
         setError("Generation timed out. Please try again.");
@@ -209,6 +215,12 @@ export function EmailGeneratorModal({
                 Retry
               </button>
             </div>
+          )}
+
+          {warning && !error && (
+            <p className="rounded-lg border border-amber-500/30 bg-amber-950/30 px-3 py-2 text-xs text-amber-200">
+              {warning}
+            </p>
           )}
 
           {lastGeneratedAt && !error && (
